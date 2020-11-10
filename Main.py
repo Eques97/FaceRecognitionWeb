@@ -20,7 +20,7 @@ def IsMatch(userName, userImage):
     knownEncodings = face_recognition.face_encodings(knownImage)
     unknownImage = Base64ToImage(userImage)
     unknownEncodings = face_recognition.face_encodings(unknownImage)
-    return face_recognition.compare_faces(knownEncodings, unknownEncodings[0], tolerance=0.5)[0] if len(unknownEncodings) > 0 else False
+    return face_recognition.compare_faces(knownEncodings, unknownEncodings[0], tolerance=0.3)[0] if len(unknownEncodings) > 0 else False
 
 app = Flask(__name__)
 
