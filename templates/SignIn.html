@@ -22,13 +22,17 @@
 <body>
     <canvas id="canvas" hidden></canvas>
     <div id="container">
+        <h1>Sign in</h1>
+        {% if error %}
+        <strong>{{ error }}</strong>
+        {% endif %}
         <video id="video" width="225" autoplay></video>
-        <form method="post" action="/signincheck" onsubmit="Submit()">
+        <form method="post" action="/signin" onsubmit="Submit()">
             <input id="image" name="image" type="hidden" value="">
             <input type="text" name="name" placeholder="name" />
-            <input type="submit" value="Sign In">
+            <input type="submit" value="Sign in">
         </form>
-        <a href="/signup">No account yet? Sign Up</a>
+        <a href="/signup">No account yet? Sign up</a>
     </div>
 </body>
 </html>

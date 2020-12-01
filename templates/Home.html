@@ -1,0 +1,17 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Home</h1>
+    {% if username %}
+    <h2> Welcome {{ username }}</h2>
+    <a href="/signout">Sign out</a>
+    {% else %}
+    <a href="/signin">Sign in</a>
+    {% endif %}
+</body>
+</html>

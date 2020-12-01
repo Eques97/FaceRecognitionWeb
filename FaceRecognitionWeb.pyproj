@@ -47,7 +47,7 @@
     <Content Include="static\SignIn.js" />
     <Content Include="templates\SignIn.html" />
     <Content Include="templates\SignUp.html" />
-    <Content Include="templates\User.html" />
+    <Content Include="templates\Home.html" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

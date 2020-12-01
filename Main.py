@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import face_recognition
 import numpy as np
 import base64
@@ -18,54 +18,55 @@ def IsKnown(userName):
 def IsMatch(userName, userImage):
     knownImage = face_recognition.load_image_file("users/" + userName + ".png")
     knownEncodings = face_recognition.face_encodings(knownImage)
+    assert len(knownEncodings) < 2 and len(knownEncodings) > 0
     unknownImage = Base64ToImage(userImage)
     unknownEncodings = face_recognition.face_encodings(unknownImage)
     return face_recognition.compare_faces(knownEncodings, unknownEncodings[0], tolerance=0.5)[0] if len(unknownEncodings) > 0 else False
 
 app = Flask(__name__)
+app.secret_key = "any random string"
 
 @app.route("/")
-def index():
-    return redirect(url_for("signIn"))
+def home():
+    username = None
+    if "username" in session:
+        username = session["username"]
+    return render_template("Home.html", username = username)
 
-@app.route("/signin")
+@app.route("/signin", methods = ["POST", "GET"])
 def signIn():
-    return render_template("SignIn.html")
-
-@app.route("/signup")
-def signUp():
-    return render_template("SignUp.html")
-
-@app.route("/user/<name>")
-def welcomeUser(name):
-   return render_template("User.html", name = name)
-
-@app.route("/signincheck", methods = ["POST", "GET"])
-def validateUser():
+    error = None
     if request.method == "POST":
-        userName = request.form["name"]
+        username = request.form["name"]
         userImage = request.form["image"]
-        if IsKnown(userName):
-            if IsMatch(userName, userImage):
-                print("match")
-                return redirect(url_for("welcomeUser", name = userName))
+        if IsKnown(username):
+            if IsMatch(username, userImage):
+                session["username"] = username
+                return redirect(url_for("home"))
             else:
-                print("face doesn't match")
-                return redirect(url_for("signIn"))
+                error = "Face doesn't match!"
         else:
-            print("username doesn't exist")
-            return redirect(url_for("signIn"))
+            error = "Username doesn't exist!"
+    return render_template("SignIn.html", error = error)
 
-@app.route("/signupcheck", methods = ["POST", "GET"])
-def approveUser():
+@app.route("/signup", methods = ["POST", "GET"])
+def signUp():
+    error = None
     if request.method == "POST":
-        userName = request.form["name"]
+        username = request.form["name"]
         userImage = request.form["image"]
-        if IsKnown(userName):
-            return redirect(url_for("signUp"))
+        if IsKnown(username):
+            error = "Username already exists!"
         else:
-            cv2.imwrite("users/" + userName + ".png", Base64ToImage(userImage))
-            return redirect(url_for("welcomeUser", name = userName))
+            cv2.imwrite("users/" + username + ".png", Base64ToImage(userImage))
+            session["username"] = username
+            return redirect(url_for("home"))
+    return render_template("SignUp.html", error = error)
+
+@app.route("/signout")
+def signOut():
+    session.pop("username", None)
+    return redirect(url_for("home"))
 
 if __name__ == "__main__":
    app.run(debug = True)
